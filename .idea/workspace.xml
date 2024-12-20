@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectId" id="2qUSpcRQagJb3zj42CfPjlU8jxq" />
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="Haala" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="Haala" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <created>1733836131055</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1733836131055</updated>
+    </task>
+    <servers />
+  </component>
+</project>
