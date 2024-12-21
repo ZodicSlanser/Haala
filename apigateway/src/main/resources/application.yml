@@ -19,6 +19,10 @@ spring:
           uri: lb://USER-SERVICE
           predicates:
             - Path=/users/**
+        - id: rabbitmq-service
+          uri: lb://RABBITMQ-SERVICE
+          predicates:
+            - Path=/rabbitmq/**
     discovery:
       client:
         service-url:
