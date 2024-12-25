@@ -11,6 +11,7 @@
     <modules>
         <module>eurekaserver</module>
         <module>apigateway</module>
+        <module>delivery-service</module>
     </modules>
 
     <dependencyManagement>
