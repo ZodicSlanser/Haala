@@ -4,11 +4,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import com.gizasystems.deliveryservice.entity.DeliveryPerson;
 import com.gizasystems.deliveryservice.dto.OrderDTO;
-import com.gizasystems.deliveryservice.dto.CalcFeesRequest;
 import com.gizasystems.deliveryservice.dto.UpdateAvailabilityRequest;
-import com.gizasystems.deliveryservice.dto.ViewAssignedOrdersRequest;
 import com.gizasystems.deliveryservice.dto.AcceptOrderRequest;
 import com.gizasystems.deliveryservice.service.DeliveryPersonService;
 
@@ -25,10 +26,25 @@ public class DeliveryPersonController {
   // @Autowired
   // private OrderService orderService;
 
+  private Long getDeliveryPersonId() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Long deliveryPersonId = null;
+    try {
+      deliveryPersonId = Long.parseLong(authentication.getName());
+    } catch (Exception e) {
+      return null;
+    }
+    return deliveryPersonId;
+  }
+
   @PostMapping("/update-availability")
   public ResponseEntity<DeliveryPerson> updateAvailability(@RequestBody UpdateAvailabilityRequest request) {
-    DeliveryPerson updatedDeliveryPerson = deliveryPersonService.updateAvailability(request.getDeliveryPersonId(), request.getAvailability());
-    return ResponseEntity.ok(updatedDeliveryPerson);
+    Long deliveryPersonId = getDeliveryPersonId();
+    if (deliveryPersonId != null) {
+      DeliveryPerson updatedDeliveryPerson = deliveryPersonService.updateAvailability(deliveryPersonId, request.getAvailability());
+      return ResponseEntity.ok(updatedDeliveryPerson);
+    }
+    return ResponseEntity.badRequest().build();
   }
 
   // @PostMapping("/accept-order")
