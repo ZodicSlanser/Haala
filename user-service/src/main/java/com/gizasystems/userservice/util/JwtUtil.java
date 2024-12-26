@@ -22,16 +22,18 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
     }
 
-    public String generateToken(String username) {
-
-
+    public String generateToken(String username, Long id, String role) {
         return Jwts.builder()
-                .subject(username)
+                .claim("email", username) // Add email claim
+                .claim("id", id)          // Add id claim
+                .claim("role", role)      // Add role claim
+                .subject(username)        // Keep subject as username
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-                .signWith(key)
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours expiry
+                .signWith(key)            // Signing key
                 .compact();
     }
+
 
     public String extractUsername(String token) {
         try {
@@ -41,6 +43,45 @@ public class JwtUtil {
                     .parseSignedClaims(token)
                     .getPayload()
                     .getSubject();
+        } catch (JwtException e) {
+            return null;
+        }
+    }
+
+    public String extractEmail(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .get("email", String.class);
+        } catch (JwtException e) {
+            return null;
+        }
+    }
+
+    public Long extractId(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .get("id", Long.class);
+        } catch (JwtException e) {
+            return null;
+        }
+    }
+
+    public String extractRole(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .get("role", String.class);
         } catch (JwtException e) {
             return null;
         }

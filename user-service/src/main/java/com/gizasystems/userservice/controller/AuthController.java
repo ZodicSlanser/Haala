@@ -5,6 +5,7 @@ import com.gizasystems.userservice.dto.AuthResponse;
 import com.gizasystems.userservice.dto.SignupRequest;
 import com.gizasystems.userservice.dto.UserDTO;
 import com.gizasystems.userservice.entity.User;
+import com.gizasystems.userservice.repository.UserRepository;
 import com.gizasystems.userservice.service.CustomUserDetailsService;
 import com.gizasystems.userservice.service.UserService;
 import com.gizasystems.userservice.util.JwtUtil;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,9 +34,12 @@ public class AuthController {
 
     private final UserService userService;
 
+    private final UserRepository userRepository;
+
     @Autowired
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
 
@@ -55,8 +60,12 @@ public class AuthController {
         // Load user details
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
 
-        // Generate JWT token
-        final String jwt = jwtUtil.generateToken(userDetails.getUsername());
+
+        final User user = userRepository.findByEmail(authRequest.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Generate JWT token with email, id, and role
+        final String jwt = jwtUtil.generateToken(user.getEmail(), user.getId(), user.getRole().getName());
 
         // Use UserService to fetch UserDTO
         UserDTO userDTO = userService.getUserDTOByEmail(authRequest.getUsername());
