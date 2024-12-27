@@ -9,12 +9,11 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+
 @Component
 public class JwtUtil {
 
-    private final String SECRET_KEY = "656ab598fba7e95af5b8cc6963846cc82785c22e07cc85e6342935963e526b82266b030428288c0b9eed6cc5d07b2521be7200e05a5ee1a2f34f8223ba6ce7f4";
+    private final String SECRET_KEY = "OmarEsawyOHMYGODThisIsTheBestDayOfMyLifeIamSoHappyHaveANiceDayDohaIsMyWifeIamSoHappy";
     private SecretKey key;
 
     public JwtUtil() {

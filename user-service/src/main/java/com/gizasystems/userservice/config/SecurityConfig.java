@@ -27,25 +27,22 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
                         .requestMatchers("/authenticate/**").permitAll()
-
-                        // Role-specific access
-                        .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
-                        .requestMatchers("/api/owner/**").hasRole("OWNER")
-                        .requestMatchers("/api/delivery/**").hasRole("DELIVERY_PERSON")
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-
-                        // Any other request must be authenticated
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        // Add the JWT authentication filter
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling((exceptionHandling) -> {
+                    exceptionHandling
+                            .authenticationEntryPoint((request, response, authException) -> {
+                                // Redirect to login page if unauthenticated
+                                response.sendRedirect("http://localhost:3000/login");
+                            });
+                });
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
