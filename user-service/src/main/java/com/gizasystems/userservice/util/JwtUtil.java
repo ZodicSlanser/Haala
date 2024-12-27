@@ -4,6 +4,8 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -12,12 +14,13 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-
-    private final String SECRET_KEY = "OmarEsawyOHMYGODThisIsTheBestDayOfMyLifeIamSoHappyHaveANiceDayDohaIsMyWifeIamSoHappy";
+    @Value("${jwt.secret}")
+    private String SECRET_KEY ;
     private SecretKey key;
 
-    public JwtUtil() {
-        // Decode the SECRET_KEY if it's Base64 encoded, or use raw bytes if not
+    @PostConstruct
+    private void initializeKey() {
+        // Decode the SECRET_KEY after it is injected
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
     }
 
