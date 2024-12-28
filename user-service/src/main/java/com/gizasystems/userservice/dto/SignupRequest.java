@@ -15,8 +15,6 @@ public class SignupRequest {
     private String phoneNumber;
 
 
-    // For Delivery Person-specific fields
-    private Boolean availability;
 
     // Additional fields can be added as needed
 }
