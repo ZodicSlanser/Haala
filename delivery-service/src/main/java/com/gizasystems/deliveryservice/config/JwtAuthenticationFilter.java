@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
@@ -45,16 +46,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       String jwt = authorizationHeader.substring(7);
       try {
         // TODO: change the deprecated methods
-        Long userId = Jwts.parser()
+
+        Claims claims = Jwts.parser()
                  .setSigningKey(secretKey)
                  .build()
                  .parseClaimsJws(jwt)
-                 .getBody()
-                 .get("userId", Long.class);
-        // TODO:
-        // 1. should check that this user exists in the database
-        // 2. should check that this user is a delivery person
-        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                 .getBody();
+        
+        Long userId = claims.get("id", Long.class);
+        String role = claims.get("role", String.class);
+        
+        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null &&
+            role != null && role.equals("DELIVERY_PERSON")) {
           UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, null);
           authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
           SecurityContextHolder.getContext().setAuthentication(authentication);
