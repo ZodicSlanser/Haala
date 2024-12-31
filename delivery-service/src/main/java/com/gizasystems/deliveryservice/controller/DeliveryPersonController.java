@@ -77,7 +77,7 @@ public class DeliveryPersonController {
     return ResponseEntity.ok(order);
   }
 
-  @GetMapping("/CalculateProfit")
+  @GetMapping("/calculate-profit")
   public ResponseEntity<Double> CalculateProfit() {
     // TODO: this can be implemented using a single query to the database in the order-service
     Long deliveryPersonId = getDeliveryPersonId();
