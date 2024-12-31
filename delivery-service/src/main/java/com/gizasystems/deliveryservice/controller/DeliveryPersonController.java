@@ -10,13 +10,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.gizasystems.deliveryservice.entity.DeliveryPerson;
 import com.gizasystems.deliveryservice.dto.OrderDTO;
 import com.gizasystems.deliveryservice.dto.UpdateAvailabilityRequest;
-import com.gizasystems.deliveryservice.dto.AcceptOrderRequest;
 import com.gizasystems.deliveryservice.service.DeliveryPersonService;
 
 import com.gizasystems.deliveryservice.service.OrderService;
 
 @RestController
-@RequestMapping("/api/v1/delivery-person")
+@RequestMapping("/delivery-person")
 public class DeliveryPersonController {
 
   @Autowired
@@ -46,11 +45,15 @@ public class DeliveryPersonController {
     return ResponseEntity.badRequest().build();
   }
 
-  // @PostMapping("/accept-order")
-  // public ResponseEntity<OrderDTO> acceptOrder(@RequestBody AcceptOrderRequest request) {
-  //   OrderDTO order = orderService.assignDeliveryToOrder(request.getDeliveryPersonId(), request.getOrderId());
-  //   return ResponseEntity.ok(order);
-  // }
+  @PutMapping("/accept-order/{id}")
+  public ResponseEntity<OrderDTO> acceptOrder(@PathVariable Long id) {
+    Long deliveryPersonId = getDeliveryPersonId();
+    if (deliveryPersonId != null) {
+      OrderDTO order = orderService.assignDeliveryToOrder(id, deliveryPersonId);
+      return ResponseEntity.ok(order);
+    }
+    return ResponseEntity.badRequest().build();
+  }
 
   @GetMapping("/view-waiting-orders")
   public ResponseEntity<List<OrderDTO>> viewWaitingOrders() {

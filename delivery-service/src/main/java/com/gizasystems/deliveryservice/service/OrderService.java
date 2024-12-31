@@ -10,7 +10,7 @@ import com.gizasystems.deliveryservice.dto.OrderDTO;
 
 import java.util.List;
 
-@FeignClient(value = "jplaceholder", url = "http://localhost:8082/api/v1/orders")
+@FeignClient(value = "jplaceholder", url = "http://localhost:8082/orders")
 public interface OrderService {
   // can be used to view all orders by state (for delivery person to view waiting orders)
   @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -25,5 +25,8 @@ public interface OrderService {
   // can be used to mark orders as ON_WAY or DELIVERED
   @RequestMapping(value = "/{id}/state", method = RequestMethod.PUT)
   OrderDTO updateOrderState(@PathVariable("id") Long id, @RequestParam("state") String status);
+
+  @RequestMapping(value = "/{id}/delivery-person", method = RequestMethod.PUT)
+  OrderDTO assignDeliveryToOrder(@PathVariable("id") Long id, @RequestParam("deliveryPersonId") Long deliveryPersonId);
 }
 
