@@ -12,6 +12,7 @@
         <module>eurekaserver</module>
         <module>apigateway</module>
         <module>user-service</module>
+        <module>restaurant-service</module>
     </modules>
 
     <dependencyManagement>
