@@ -8,25 +8,25 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      authorized-endpoints:
-        - path: /restaurants/**
-          roles: ["ADMIN", "USER"]
-        - /orders/**
-        - /users/**
-        -
       routes:
         - id: restaurant-service
           uri: lb://RESTAURANT-SERVICE
           predicates:
-            - Path=/restaurants/**
+            - Path=/api/restaurants/**
+          filters:
+            - RoleBasedAuthorization
         - id: order-service
           uri: lb://ORDER-SERVICE
           predicates:
-            - Path=/orders/**
+            - Path=/api/orders/**
+          filters:
+            - RoleBasedAuthorization
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/users/**
+            - Path=/api/users/**
+          filters:
+            - RoleBasedAuthorization
     discovery:
       client:
         service-url:
@@ -36,11 +36,27 @@ spring:
 jwt:
   secret: 3e7cbe8aebe67cf7c758b216ea0dd42edc43c1befc1d36f72cd6bc5f29d8567c8bf85972b636c3275b27e80940eb9d67cb61ea00bd8f07a62f62b7c0aeef4ca5
 
+gateway:
+  authorized-endpoints:
+    - path: /api/admins/**
+      roles: [ "ADMIN" ]
+    - path: /api/users/**
+      roles: [ "ADMIN","CUSTOMER" ]
+    - path: /api/restaurants/**
+      roles: [ "OWNER", "ADMIN" ]
+    - path: /api/orders/**
+      roles: [ "USER", "ADMIN" ]
+    - path: /api/deliveries/**
+      roles: [ "DELIVERY_PERSON","ADMIN" ]
+
+
 eureka:
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
   client:
     register-with-eureka: true
     fetch-registry: true
-  instance:
-    prefer-ip-address: true
-
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
 
