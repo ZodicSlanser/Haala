@@ -13,7 +13,7 @@ import com.gizasystems.deliveryservice.service.DeliveryPersonService;
 import com.gizasystems.deliveryservice.service.OrderService;
 
 @RestController
-@RequestMapping("/delivery-person")
+@RequestMapping("/api/delivery-person")
 public class DeliveryPersonController {
   @Autowired
   private DeliveryPersonService deliveryPersonService;
