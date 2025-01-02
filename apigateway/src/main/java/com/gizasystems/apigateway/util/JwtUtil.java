@@ -6,11 +6,11 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.Objects;
 
 @Component
 public class JwtUtil {
@@ -45,19 +45,21 @@ public class JwtUtil {
 
     public String extractRole(String token) {
         try {
-            return Jwts.parser()
+            String role = Jwts.parser()
                     .verifyWith(key)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload()
                     .get("role", String.class);
+
+            return role != null ? role.toUpperCase() : null;
         } catch (JwtException e) {
             return null;
         }
     }
 
     private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        return Objects.requireNonNull(extractExpiration(token)).before(new Date());
     }
 
 
