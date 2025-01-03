@@ -1,16 +1,18 @@
 package com.gizasystems.restaurantservice.DTOs;
 
+import java.math.BigDecimal;
+
 public class ItemDto {
     private Long id;
     private String name;
     private String description;
-    private double price;
+    private BigDecimal price;
     private double rating;
     private String category;
     private int quantity;
 //    private boolean availability;
 
-    public ItemDto(Long id, String name, String description, double price, double rating, String category, int quantity) {
+    public ItemDto(Long id, String name, String description, BigDecimal price, double rating, String category, int quantity) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -35,7 +37,7 @@ public class ItemDto {
         return description;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 

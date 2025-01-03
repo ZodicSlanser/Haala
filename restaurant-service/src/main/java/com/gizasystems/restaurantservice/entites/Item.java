@@ -1,5 +1,6 @@
 package com.gizasystems.restaurantservice.entites;
 
+import java.math.BigDecimal;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,12 +12,12 @@ public class Item {
     private Long id;
     private String name;
     private String description;
-    private double price;
+    private BigDecimal price;
     private double rating;
     private String category;
     private int quantity;
 
-    public Item(Long id, String name, String description, double price, double rating, String category, int quantity) {
+    public Item(Long id, String name, String description, BigDecimal price, double rating, String category, int quantity) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -42,7 +43,7 @@ public class Item {
         return description;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
@@ -71,7 +72,7 @@ public class Item {
         this.description = description;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
