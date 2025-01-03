@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     @Autowired
     private ItemRepository itemRepository;
+
     @Override
     public ItemDto createItem(ItemDto itemDto) {
 
@@ -33,12 +34,11 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(()->new ResourceNotFoundException("Item is not existing with given id: "+itemId));
 
         return ItemMapper.mapToItemDto(item);
-//        return null;
     }
 
     @Override
     public List<ItemDto> getAllItems() {
-        var items = itemRepository.findAll();
+        List<Item> items = itemRepository.findAll();
 
         return items.stream().map((item)->ItemMapper.mapToItemDto(item))
                 .collect(Collectors.toList());

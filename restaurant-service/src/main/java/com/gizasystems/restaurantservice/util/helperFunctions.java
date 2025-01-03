@@ -1,18 +1,25 @@
 package com.gizasystems.restaurantservice.util;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class helperFunctions {
-    public static Long getOwnerId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long OwnerId = null;
-        try {
-            OwnerId = Long.parseLong(authentication.getName());
-        } catch (Exception e) {
-            return null;
+    public static Long getUserId(HttpServletRequest request) {
+      try {
+        String userIdHeader = request.getHeader("X-User-Id");
+        if (userIdHeader != null && !userIdHeader.isEmpty()) {
+          return Long.parseLong(userIdHeader);
         }
-        return OwnerId;
+      } catch (Exception e) { }
+      return null;
     }
 
+    public static String getUserRole(HttpServletRequest request) {
+      try {
+        String userRoleHeader = request.getHeader("X-User-Role");
+        if (userRoleHeader != null && !userRoleHeader.isEmpty()) {
+          return userRoleHeader;
+        }
+      } catch (Exception e) { }
+      return null;
+    }
 }

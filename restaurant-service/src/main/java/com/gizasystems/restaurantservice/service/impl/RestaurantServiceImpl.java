@@ -39,7 +39,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public List<RestaurantDto> getAllRestaurants() {
-        var restaurants = restaurantRepository.findAll();
+        List<Restaurant> restaurants = restaurantRepository.findAll();
 
         return restaurants.stream().map(RestaurantMapper::mapToRestaurantDto)
                 .collect(Collectors.toList());
