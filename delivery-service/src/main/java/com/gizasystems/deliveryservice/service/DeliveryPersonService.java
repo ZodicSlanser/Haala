@@ -7,6 +7,8 @@ import java.util.NoSuchElementException;
 
 import com.gizasystems.deliveryservice.entity.DeliveryPerson;
 import com.gizasystems.deliveryservice.repository.DeliveryPersonRepository;
+import com.gizasystems.deliveryservice.exception.DeliveryPersonNotFoundException;
+import com.gizasystems.deliveryservice.exception.DeliveryPersonAlreadyExistsException;
 
 @Service
 public class DeliveryPersonService {
@@ -18,7 +20,7 @@ public class DeliveryPersonService {
   @Transactional
   public DeliveryPerson updateAvailability(Long deliveryPersonId, Boolean availability) {
     DeliveryPerson deliveryPerson = deliveryPersonRepository.findById(deliveryPersonId)
-      .orElseThrow(() -> new NoSuchElementException("DeliveryPerson not found with id: " + deliveryPersonId));
+      .orElseThrow(() -> new DeliveryPersonNotFoundException("DeliveryPerson not found with id: " + deliveryPersonId));
     deliveryPerson.setAvailability(availability);
     return deliveryPersonRepository.save(deliveryPerson);
   }
