@@ -24,11 +24,7 @@ spring:
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/api/users/**
-            - Path=/api/auth/**
-            - Path=/api/admins/**
-            - Path=/api/tests/**
-            - Path=/api/addresses/**
+            - Path=/api/users/**,/api/admins/**,/api/addresses/**,/api/auth/**
           filters:
             - RoleBasedAuthorization
         - id: delivery-service
@@ -50,6 +46,8 @@ gateway:
     - path: /api/auth/**
       roles: [ "ANY" ]
     - path: /api/users/**
+      roles: [ "ADMIN","CUSTOMER" ]
+    - path: /api/addresses/**
       roles: [ "ADMIN","CUSTOMER" ]
     - path: /api/restaurants/**
       roles: [ "OWNER", "ADMIN" ]

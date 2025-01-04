@@ -35,6 +35,8 @@ public class AddressService {
         address.setLongitude(addressDTO.getLongitude());
         address.setCustomer(customer);
 
+
+
         Address savedAddress = addressRepository.save(address);
         return mapToDTO(savedAddress);
     }
