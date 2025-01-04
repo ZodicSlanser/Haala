@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import com.gizasystems.deliveryservice.entity.DeliveryPerson;
 import com.gizasystems.deliveryservice.dto.OrderDTO;
+import com.gizasystems.deliveryservice.dto.DeliveryPersonDTO;
 import com.gizasystems.deliveryservice.service.DeliveryPersonService;
 import com.gizasystems.deliveryservice.service.OrderService;
 
@@ -32,6 +33,13 @@ public class DeliveryPersonController {
       }
     } catch (Exception e) { }
     return null;
+  }
+
+  @PostMapping("/register")
+  public ResponseEntity<DeliveryPerson> register(HttpServletRequest request,
+                                                 @RequestBody DeliveryPersonDTO deliveryPersonDTO) {
+    DeliveryPerson deliveryPerson = deliveryPersonService.register(deliveryPersonDTO);
+    return ResponseEntity.ok(deliveryPerson);
   }
 
   @PostMapping("/availability")

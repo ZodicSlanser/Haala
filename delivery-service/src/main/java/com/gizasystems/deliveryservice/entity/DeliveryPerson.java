@@ -11,10 +11,13 @@ import lombok.NoArgsConstructor;
 public class DeliveryPerson {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(nullable = false)
-  private Boolean availability = true;
+  private Boolean availability = false;
+
+  public DeliveryPerson(Long id) {
+    this.id = id;
+  }
 }
 
