@@ -75,6 +75,16 @@ public class DeliveryPersonController {
     return ResponseEntity.ok(assignedOrders);
   }
 
+  @GetMapping("/orders/delivered")
+  public ResponseEntity<List<OrderDTO>> viewDeliveredOrders(HttpServletRequest request) {
+    Long deliveryPersonId = getDeliveryPersonId(request);
+    if (deliveryPersonId == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+    List<OrderDTO> assignedOrders = orderService.getAssignedOrders("DELIVERED", deliveryPersonId);
+    return ResponseEntity.ok(assignedOrders);
+  }
+
   @PostMapping("/orders/{orderId}/confirm-payment")
   public ResponseEntity<?> confirmPayment(HttpServletRequest request, @PathVariable Long orderId) {
     Long deliveryPersonId = getDeliveryPersonId(request);
