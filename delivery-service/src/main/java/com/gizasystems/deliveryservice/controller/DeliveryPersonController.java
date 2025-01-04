@@ -1,6 +1,7 @@
 package com.gizasystems.deliveryservice.controller;
 
 import java.util.List;
+import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,16 +86,16 @@ public class DeliveryPersonController {
   }
 
   @GetMapping("/profit")
-  public ResponseEntity<Double> calculateProfit(HttpServletRequest request) {
+  public ResponseEntity<BigDecimal> viewProfit(HttpServletRequest request) {
     // TODO: this can be implemented using a single query to the database in the order-service
     Long deliveryPersonId = getDeliveryPersonId(request);
     if (deliveryPersonId == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
     List<OrderDTO> orders = orderService.getAssignedOrders("DELIVERED", deliveryPersonId);
-    double profit = 0;
+    BigDecimal profit = new BigDecimal(0);
     for (OrderDTO order : orders) {
-      profit += order.getDeliveryFees();
+      profit = profit.add(order.getDeliveryFees());
     }
     return ResponseEntity.ok(profit);
   }
