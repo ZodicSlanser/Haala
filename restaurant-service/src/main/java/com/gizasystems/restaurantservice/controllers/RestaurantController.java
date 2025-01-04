@@ -23,9 +23,6 @@ public class RestaurantController {
     @PostMapping
     public ResponseEntity<RestaurantDto> createRestaurant(HttpServletRequest request,
                                                           @RequestBody RestaurantDto restaurantDto){
-        Long ownerId = getUserId(request);
-        if(ownerId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
         RestaurantDto savedRestaurant = restaurantService.createRestaurant(restaurantDto);
         return new ResponseEntity<>(savedRestaurant, HttpStatus.CREATED);
     }
@@ -33,18 +30,12 @@ public class RestaurantController {
     @GetMapping("{id}")
     public ResponseEntity<RestaurantDto> getRestaurantById(HttpServletRequest request, 
                                                            @PathVariable("id") Long restaurantId){
-        Long ownerId = getUserId(request);
-        if(ownerId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
         RestaurantDto restaurantDto = restaurantService.getRestaurantById(restaurantId);
         return ResponseEntity.ok(restaurantDto);
     }
 
     @GetMapping
     public ResponseEntity<List<RestaurantDto>> getAllRestaurants(HttpServletRequest request){
-        Long ownerId = getUserId(request);
-        if(ownerId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
         List<RestaurantDto> restaurants = restaurantService.getAllRestaurants();
         return ResponseEntity.ok(restaurants);
     }
@@ -53,9 +44,6 @@ public class RestaurantController {
     public ResponseEntity<RestaurantDto> updateRestaurant(HttpServletRequest request,
                                                           @PathVariable("id") Long restaurantId,
                                                           @RequestBody RestaurantDto updatedRestaurant){
-        Long ownerId = getUserId(request);
-        if(ownerId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
         RestaurantDto restaurantDto = restaurantService.updateRestaurant(restaurantId, updatedRestaurant);
         return ResponseEntity.ok(restaurantDto);
     }
@@ -63,10 +51,31 @@ public class RestaurantController {
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteRestaurant(HttpServletRequest request,
                                                    @PathVariable("id") Long restaurantId){
-        Long ownerId = getUserId(request);
-        if(ownerId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
         restaurantService.deleteRestaurant(restaurantId);
         return ResponseEntity.ok("Restaurant deleted successfully!");
     }
+
+    @GetMapping("/address/{addressId}")
+    public ResponseEntity<RestaurantDto> getRestaurantByAddressId(@PathVariable("addressId") Long addressId) {
+        RestaurantDto restaurantDto = restaurantService.getRestaurantByAddressId(addressId);
+        return ResponseEntity.ok(restaurantDto);
+    }
+
+    @GetMapping("/owner/{ownerId}")
+    public ResponseEntity<RestaurantDto> getRestaurantByOwnerId(@PathVariable("ownerId") Long ownerId) {
+        RestaurantDto restaurantDto = restaurantService.getRestaurantByOwnerId(ownerId);
+        return ResponseEntity.ok(restaurantDto);
+    }
+
+    @GetMapping("/owner/{ownerId}/restaurants")
+    public ResponseEntity<List<RestaurantDto>> getAllRestaurantsByOwnerId(@PathVariable("ownerId") Long ownerId) throws Throwable {
+        List<RestaurantDto> restaurants = restaurantService.getRestaurantsByOwnerId(ownerId);
+        return ResponseEntity.ok(restaurants);
+    }
+
+    @GetMapping("/name/{name}")
+    public ResponseEntity<RestaurantDto> getRestaurantByName(@PathVariable("name") String name) {
+        return ResponseEntity.ok(restaurantService.getRestaurantByName(name));
+    }
+
 }

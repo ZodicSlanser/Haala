@@ -1,6 +1,8 @@
 package com.gizasystems.restaurantservice.service.impl;
 
+import com.gizasystems.restaurantservice.entites.Restaurant;
 import com.gizasystems.restaurantservice.exceptions.ResourceNotFoundException;
+import com.gizasystems.restaurantservice.repository.RestaurantRepository;
 import lombok.AllArgsConstructor;
 import com.gizasystems.restaurantservice.DTOs.ItemDto;
 import com.gizasystems.restaurantservice.entites.Item;
@@ -18,14 +20,21 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     @Autowired
     private ItemRepository itemRepository;
+    @Autowired
+    private RestaurantRepository restaurantRepository;
 
-    @Override
     public ItemDto createItem(ItemDto itemDto) {
 
-        Item item = ItemMapper.mapToItem(itemDto);
-        Item savedItem = itemRepository.save(item);
+        Restaurant restaurant = restaurantRepository.findById(itemDto.getRestaurantId())
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + itemDto.getRestaurantId()));
 
-        return ItemMapper.mapToItemDto(savedItem);
+        Item item = ItemMapper.mapToItem(itemDto, restaurant);
+
+        restaurant.getItemIds().add(item.getId());
+
+        restaurantRepository.save(restaurant);
+
+        return ItemMapper.mapToItemDto(item);
     }
 
     @Override
@@ -70,6 +79,20 @@ public class ItemServiceImpl implements ItemService {
 
         itemRepository.deleteById(itemId);
 
+    }
+
+    @Override
+    public List<ItemDto> getItemsByRestaurantId(Long restaurantId) {
+        return itemRepository.findByRestaurant_Id(restaurantId).stream()
+                .map(ItemMapper::mapToItemDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ItemDto> getItemsByCategory(String category) {
+        return itemRepository.findByCategory(category).stream()
+                .map(ItemMapper::mapToItemDto)
+                .collect(Collectors.toList());
     }
 
 }

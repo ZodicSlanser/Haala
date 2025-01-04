@@ -11,8 +11,9 @@ public class ItemDto {
     private String category;
     private int quantity;
 //    private boolean availability;
+    private Long restaurantId;
 
-    public ItemDto(Long id, String name, String description, BigDecimal price, double rating, String category, int quantity) {
+    public ItemDto(Long id, String name, String description, BigDecimal price, double rating, String category, int quantity, Long restaurantId) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -20,6 +21,7 @@ public class ItemDto {
         this.rating = rating;
         this.category = category;
         this.quantity = quantity;
+        this.restaurantId = restaurantId;
     }
     public ItemDto() {
     }
@@ -52,5 +54,10 @@ public class ItemDto {
     public int getQuantity() {
         return quantity;
     }
+    
+    public Long getRestaurantId() {
+        return restaurantId;
+    }
+
 }
 

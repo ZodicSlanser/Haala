@@ -16,5 +16,10 @@ public interface ItemService {
     ItemDto updateItem(Long itemId, ItemDto updatedItem);
 
     void deleteItem(Long itemId);
+
+    List<ItemDto> getItemsByRestaurantId(Long restaurantId);
+
+    List<ItemDto> getItemsByCategory(String category);
+
 }
 

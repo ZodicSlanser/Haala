@@ -8,12 +8,13 @@ import java.util.List;
 @Service
 public interface RestaurantService {
     RestaurantDto createRestaurant(RestaurantDto restaurantDto);
-
     RestaurantDto getRestaurantById(Long restaurantId);
-
     List<RestaurantDto> getAllRestaurants();
-
     RestaurantDto updateRestaurant(Long restaurantId, RestaurantDto updatedRestaurant);
-
     void deleteRestaurant(Long restaurantId);
+    RestaurantDto getRestaurantByAddressId(Long addressId);
+    RestaurantDto getRestaurantByOwnerId(Long ownerId);
+    List<RestaurantDto> getRestaurantsByOwnerId(Long ownerId) throws Throwable;
+    RestaurantDto getRestaurantByName(String name);
+
 }
