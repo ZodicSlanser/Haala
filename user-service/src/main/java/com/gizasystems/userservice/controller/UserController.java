@@ -3,37 +3,48 @@ package com.gizasystems.userservice.controller;
 import com.gizasystems.userservice.dto.SignupRequest;
 import com.gizasystems.userservice.dto.UserDTO;
 import com.gizasystems.userservice.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
-
     private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @PostMapping("/update/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody SignupRequest signupRequest) {
+
+    private Long getCustomerPersonId(HttpServletRequest request) {
         try {
-            UserDTO updatedUser = userService.updateUser(id, signupRequest);
-            return ResponseEntity.ok(updatedUser);
+            String userIdHeader = request.getHeader("X-User-Id");
+            if (userIdHeader != null && !userIdHeader.isEmpty()) {
+                return Long.parseLong(userIdHeader);
+            }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            throw new RuntimeException("User not found");
         }
+        return null;
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        try {
-            userService.deleteUser(id);
-            return ResponseEntity.ok("User deleted successfully");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @PostMapping("/update")
+    public ResponseEntity<?> updateUser(HttpServletRequest request, @Valid @RequestBody SignupRequest signupRequest) {
+        Long id = getCustomerPersonId(request);
+
+        UserDTO updatedUser = userService.updateUser(id, signupRequest);
+        return ResponseEntity.ok(updatedUser);
+
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteUser(HttpServletRequest request) {
+        Long id = getCustomerPersonId(request);
+        userService.deleteUser(id);
+        return ResponseEntity.ok("User deleted successfully");
+
     }
 }
