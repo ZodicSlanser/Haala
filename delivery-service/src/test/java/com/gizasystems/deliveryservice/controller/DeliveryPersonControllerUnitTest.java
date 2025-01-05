@@ -76,7 +76,13 @@ public class DeliveryPersonControllerUnitTest {
         ResponseEntity<List<OrderDTO>> response = deliveryPersonController.viewWaitingOrders(request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
-        // TODO: check the response body
+        
+        assertEquals(1L, response.getBody().get(0).getId());
+        assertEquals(1L, response.getBody().get(0).getRestaurantId());
+        assertEquals(1L, response.getBody().get(0).getCustomerId());
+        assertEquals(BigDecimal.TEN, response.getBody().get(0).getTotal());
+        assertEquals(BigDecimal.ONE, response.getBody().get(0).getDeliveryFees());
+
     }
 
     @Test
@@ -85,7 +91,12 @@ public class DeliveryPersonControllerUnitTest {
         ResponseEntity<OrderDTO> response = deliveryPersonController.acceptOrder(request, 1L);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(orderDTO, response.getBody());
-        // TODO: check the response body
+
+        assertEquals(1L, response.getBody().getId());
+        assertEquals(1L, response.getBody().getRestaurantId());
+        assertEquals(1L, response.getBody().getCustomerId());
+        assertEquals(BigDecimal.TEN, response.getBody().getTotal());
+        assertEquals(BigDecimal.ONE, response.getBody().getDeliveryFees());
     }
 
     @Test
@@ -94,7 +105,12 @@ public class DeliveryPersonControllerUnitTest {
         ResponseEntity<List<OrderDTO>> response = deliveryPersonController.viewAssignedOrders(request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
-        // TODO: check the response body
+
+        assertEquals(1L, response.getBody().get(0).getId());
+        assertEquals(1L, response.getBody().get(0).getRestaurantId());
+        assertEquals(1L, response.getBody().get(0).getCustomerId());
+        assertEquals(BigDecimal.TEN, response.getBody().get(0).getTotal());
+        assertEquals(BigDecimal.ONE, response.getBody().get(0).getDeliveryFees());
     }
 
     @Test
@@ -103,15 +119,25 @@ public class DeliveryPersonControllerUnitTest {
         ResponseEntity<List<OrderDTO>> response = deliveryPersonController.viewDeliveredOrders(request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
-        // TODO: check the response body
+
+        assertEquals(1L, response.getBody().get(0).getId());
+        assertEquals(1L, response.getBody().get(0).getRestaurantId());
+        assertEquals(1L, response.getBody().get(0).getCustomerId());
+        assertEquals(BigDecimal.TEN, response.getBody().get(0).getTotal());
+        assertEquals(BigDecimal.ONE, response.getBody().get(0).getDeliveryFees());
     }
 
     @Test
     public void testConfirmPayment() {
         when(orderService.updateOrderState(1L, "DELIVERED")).thenReturn(orderDTO);
-        ResponseEntity<?> response = deliveryPersonController.confirmPayment(request, 1L);
+        ResponseEntity<OrderDTO> response = deliveryPersonController.confirmPayment(request, 1L);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        // TODO: check the response body
+
+        assertEquals(1L, response.getBody().getId());
+        assertEquals(1L, response.getBody().getRestaurantId());
+        assertEquals(1L, response.getBody().getCustomerId());
+        assertEquals(BigDecimal.TEN, response.getBody().getTotal());
+        assertEquals(BigDecimal.ONE, response.getBody().getDeliveryFees());
     }
 
     @Test
