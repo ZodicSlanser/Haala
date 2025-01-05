@@ -51,7 +51,25 @@ public class OrderService {
                 .orElseThrow(() -> new OrderNotFoundException("Order with ID " + id + " not found"));
     }
 
-    public List<Order> searchOrders(OrderSearchCriteria criteria) {
+    public List<Order> searchOrders(OrderSearchCriteria criteria, Long userId, String userRole) {
+
+        if (userId != null) {
+            if (userRole.equals("ADMIN")) {
+                return orderRepository.searchOrders(criteria.restaurantId(), criteria.state(),
+                        criteria.customerId(), criteria.deliveryId());
+            }
+
+            if (userRole.equals("CUSTOMER")) {
+                criteria = new OrderSearchCriteria(criteria.restaurantId(), criteria.state(),
+                        userId, criteria.deliveryId());
+            }
+
+            if (userRole.equals("DELIVERY")) {
+                criteria = new OrderSearchCriteria(criteria.restaurantId(), criteria.state(),
+                        criteria.customerId(), userId);
+            }
+        }
+
         return orderRepository.searchOrders(criteria.restaurantId(), criteria.state(),
                 criteria.customerId(), criteria.deliveryId());
     }

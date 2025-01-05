@@ -6,6 +6,7 @@ import com.gizasystems.orderservice.entites.Order;
 import com.gizasystems.orderservice.enums.OrderState;
 import com.gizasystems.orderservice.service.OrderService;
 import com.gizasystems.orderservice.service.OrderStateService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ import java.util.List;
  * OrderController is a REST controller that handles HTTP requests related to orders.
  */
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/api/orders")
 public class OrderController {
 
     private final OrderService orderService;
@@ -32,7 +33,12 @@ public class OrderController {
      * @return the created order
      */
     @PostMapping
-    public ResponseEntity<Order> placeOrder(@RequestBody PlaceOrderDTO placeOrderDTO) {
+    public ResponseEntity<Order> placeOrder(@RequestBody PlaceOrderDTO placeOrderDTO, HttpServletRequest request) {
+        Long userId = getUserId(request);
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        placeOrderDTO = new PlaceOrderDTO(userId, placeOrderDTO.restaurantId(), placeOrderDTO.items());
         Order order = orderService.createOrder(placeOrderDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
@@ -56,8 +62,8 @@ public class OrderController {
      * @return the list of orders matching the criteria
      */
     @GetMapping
-    public ResponseEntity<List<Order>> searchOrders(OrderSearchCriteria criteria) {
-        List<Order> orders = orderService.searchOrders(criteria);
+    public ResponseEntity<List<Order>> searchOrders(OrderSearchCriteria criteria, HttpServletRequest request) {
+        List<Order> orders = orderService.searchOrders(criteria, getUserId(request), getUserRole(request));
         return ResponseEntity.ok(orders);
     }
 
@@ -100,5 +106,26 @@ public class OrderController {
         return ResponseEntity.ok(updatedOrder);
     }
 
+    private Long getUserId(HttpServletRequest request) {
+        try {
+            String userIdHeader = request.getHeader("X-User-Id");
+            if (userIdHeader != null && !userIdHeader.isEmpty()) {
+                return Long.parseLong(userIdHeader);
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
+    private String getUserRole(HttpServletRequest request) {
+        try {
+            String userRoleHeader = request.getHeader("X-User-Role");
+            if (userRoleHeader != null && !userRoleHeader.isEmpty()) {
+                return userRoleHeader;
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
 
 }

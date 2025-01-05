@@ -3,13 +3,16 @@ package com.gizasystems.orderservice.service;
 import com.gizasystems.orderservice.entites.Order;
 import com.gizasystems.orderservice.enums.OrderState;
 import com.gizasystems.orderservice.exceptions.InvalidOrderStateException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class OrderStateService {
 
+    private final OrderNotificationService orderNotificationService;
 
     public void updateOrderState(Order order, OrderState newState) {
 
@@ -29,7 +32,11 @@ public class OrderStateService {
         }
         order.setUpdated_at(LocalDateTime.now());
         order.setState(newState);
+
+        orderNotificationService.buildAndNotify(order, newState);
+
     }
+
 
     boolean isOrderStateValid(OrderState newState, OrderState currentState) {
         return switch (newState) {
@@ -42,6 +49,8 @@ public class OrderStateService {
             default -> false;
         };
     }
+
+
 }
 
 
