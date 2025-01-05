@@ -36,14 +36,22 @@ public class AddressService {
         address.setCustomer(customer);
 
 
-
         Address savedAddress = addressRepository.save(address);
         return mapToDTO(savedAddress);
     }
 
-    public AddressDTO updateAddress(Long addressId, AddressDTO addressDTO) {
+    private boolean isAuthorized(Long customerId, Address address) {
+
+        return address.getCustomer().getId().equals(customerId);
+    }
+
+    public AddressDTO updateAddress(Long customerId, Long addressId, AddressDTO addressDTO) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new IllegalArgumentException("Address not found"));
+
+        if (!isAuthorized(customerId, address)) {
+            throw new IllegalArgumentException("Not authorized to update address");
+        }
 
         address.setStreet(addressDTO.getStreet());
         address.setCity(addressDTO.getCity());
@@ -56,15 +64,19 @@ public class AddressService {
         return mapToDTO(updatedAddress);
     }
 
-    public void deleteAddress(Long addressId) {
-        if (!addressRepository.existsById(addressId)) {
-            throw new IllegalArgumentException("Address not found");
+    public void deleteAddress(Long customerId, Long addressId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("Address not found"));
+
+        if (!isAuthorized(customerId, address)) {
+            throw new IllegalArgumentException("Not authorized to update address");
         }
         addressRepository.deleteById(addressId);
     }
 
     public List<AddressDTO> getAddressesByCustomer(Long customerId) {
         List<Address> addresses = addressRepository.findByCustomerId(customerId);
+
         return addresses.stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
@@ -78,6 +90,7 @@ public class AddressService {
         dto.setZip(address.getZip());
         dto.setLatitude(address.getLatitude());
         dto.setLongitude(address.getLongitude());
+        dto.setId(address.getId());
         return dto;
     }
 }
