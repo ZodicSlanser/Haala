@@ -54,7 +54,7 @@ public class ItemDto {
     public int getQuantity() {
         return quantity;
     }
-    
+
     public Long getRestaurantId() {
         return restaurantId;
     }

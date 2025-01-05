@@ -6,16 +6,16 @@ public class RestaurantDto {
     private Long id;
     private String name;
     private Long addressId;
-    private List<Long> ownerIds;
-    private List<Long> itemIds;
+    private List<Long> ownersIds;
+    private List<Long> itemsIds;
 
     // Constructor with all fields
-    public RestaurantDto(Long id, String name, Long addressId, List<Long> ownerIds, List<Long> itemIds) {
+    public RestaurantDto(Long id, String name, Long addressId, List<Long> ownersIds, List<Long> itemsIds) {
         this.id = id;
         this.name = name;
         this.addressId = addressId;
-        this.ownerIds = ownerIds;
-        this.itemIds = itemIds;
+        this.ownersIds = ownersIds;
+        this.itemsIds = itemsIds;
     }
 
     // Default Constructor
@@ -35,12 +35,12 @@ public class RestaurantDto {
         return addressId;
     }
 
-    public List<Long> getOwnerIds() {
-        return ownerIds;
+    public List<Long> getOwnersIds() {
+        return ownersIds;
     }
 
-    public List<Long> getItemIds() {
-        return itemIds;
+    public List<Long> getItemsIds() {
+        return itemsIds;
     }
 
     // Setters
@@ -57,10 +57,10 @@ public class RestaurantDto {
     }
 
     public void setOwnerIds(List<Long> ownerIds) {
-        this.ownerIds = ownerIds;
+        this.ownersIds = ownerIds;
     }
 
     public void setItemIds(List<Long> itemIds) {
-        this.itemIds = itemIds;
+        this.itemsIds = itemIds;
     }
 }

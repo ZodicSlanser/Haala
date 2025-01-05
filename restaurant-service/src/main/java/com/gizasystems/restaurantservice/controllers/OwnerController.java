@@ -12,7 +12,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/owners")
+@RequestMapping("/api/restaurants/owners")
 public class OwnerController {
     @Autowired
     private OwnerService ownerService;

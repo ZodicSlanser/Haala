@@ -19,8 +19,8 @@ public class RestaurantMapper {
                 restaurantDto.getId(),
                 restaurantDto.getName(),
                 restaurantDto.getAddressId(),
-                restaurantDto.getOwnerIds(),
-                restaurantDto.getItemIds()
+                restaurantDto.getOwnersIds(),
+                restaurantDto.getItemsIds()
         );
     }
 }

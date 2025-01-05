@@ -34,6 +34,8 @@ public class ItemServiceImpl implements ItemService {
 
         restaurantRepository.save(restaurant);
 
+        itemRepository.save(item);
+
         return ItemMapper.mapToItemDto(item);
     }
 
