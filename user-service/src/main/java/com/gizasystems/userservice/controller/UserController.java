@@ -4,6 +4,7 @@ import com.gizasystems.userservice.dto.SignupRequest;
 import com.gizasystems.userservice.dto.UserDTO;
 import com.gizasystems.userservice.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,24 +32,19 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<?> updateUser(HttpServletRequest request, @RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<?> updateUser(HttpServletRequest request, @Valid @RequestBody SignupRequest signupRequest) {
         Long id = getCustomerPersonId(request);
-        try {
-            UserDTO updatedUser = userService.updateUser(id, signupRequest);
-            return ResponseEntity.ok(updatedUser);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+
+        UserDTO updatedUser = userService.updateUser(id, signupRequest);
+        return ResponseEntity.ok(updatedUser);
+
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteUser(HttpServletRequest request) {
         Long id = getCustomerPersonId(request);
-        try {
-            userService.deleteUser(id);
-            return ResponseEntity.ok("User deleted successfully");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        userService.deleteUser(id);
+        return ResponseEntity.ok("User deleted successfully");
+
     }
 }
