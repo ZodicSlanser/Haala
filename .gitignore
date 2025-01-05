@@ -184,3 +184,5 @@ target
 .gradle
 README.html
 .exercism
+
+postgres_data

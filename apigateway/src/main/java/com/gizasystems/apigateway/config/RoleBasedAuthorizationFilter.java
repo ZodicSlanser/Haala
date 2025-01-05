@@ -25,9 +25,19 @@ public class RoleBasedAuthorizationFilter {
         return (exchange, chain) -> {
             String path = exchange.getRequest().getPath().value();
 
+
+
             AuthorizedEndpointsConfig.EndpointConfig matchingEndpoint = findMatchingEndpoint(path);
             if (matchingEndpoint == null) {
                 return handleForbidden(exchange);
+            }
+
+
+
+            if (matchingEndpoint.getRoles().contains("ANY")) {
+                ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                        .build();
+                return chain.filter(exchange.mutate().request(mutatedRequest).build());
             }
 
             String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
@@ -40,12 +50,14 @@ public class RoleBasedAuthorizationFilter {
                 return handleUnauthorized(exchange);
             }
 
+
             Long userId = jwtUtils.extractId(token);
             String userRole = jwtUtils.extractRole(token);
 
             if (userRole == null) {
                 return handleForbidden(exchange);
             }
+
 
             if (!matchingEndpoint.getRoles().contains("ANY") &&
                     !matchingEndpoint.getRoles().contains(userRole)) {
@@ -62,8 +74,9 @@ public class RoleBasedAuthorizationFilter {
     }
 
     private AuthorizedEndpointsConfig.EndpointConfig findMatchingEndpoint(String path) {
+
         return authorizedEndpointsConfig.getAuthorizedEndpoints().stream()
-                .filter(endpoint -> path.startsWith(endpoint.getPath().replace("/**", "")))
+                .filter(endpoint -> path.startsWith(endpoint.getPath().replace("/**", "").trim()))
                 .findFirst()
                 .orElse(null);
     }
