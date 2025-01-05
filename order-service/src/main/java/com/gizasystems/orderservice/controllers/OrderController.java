@@ -16,7 +16,7 @@ import java.util.List;
  * OrderController is a REST controller that handles HTTP requests related to orders.
  */
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/api/orders")
 public class OrderController {
 
     private final OrderService orderService;
