@@ -4,6 +4,7 @@ package com.gizasystems.userservice.controller;
 import com.gizasystems.userservice.dto.AddressDTO;
 import com.gizasystems.userservice.service.AddressService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class AddressController {
     }
 
     @PostMapping
-    public ResponseEntity<AddressDTO> createAddress(HttpServletRequest request, @RequestBody AddressDTO addressDTO) {
+    public ResponseEntity<AddressDTO> createAddress(HttpServletRequest request, @Valid @RequestBody AddressDTO addressDTO) {
         Long customerId = getCustomerPersonId(request);
         AddressDTO createdAddress = addressService.createAddress(customerId, addressDTO);
         return ResponseEntity.ok(createdAddress);
@@ -41,20 +42,26 @@ public class AddressController {
 
     @PutMapping("/{addressId}")
     public ResponseEntity<AddressDTO> updateAddress(
+            HttpServletRequest request,
             @PathVariable Long addressId,
-            @RequestBody AddressDTO addressDTO) {
-        AddressDTO updatedAddress = addressService.updateAddress(addressId, addressDTO);
+            @Valid @RequestBody AddressDTO addressDTO) {
+        Long customerId = getCustomerPersonId(request);
+        AddressDTO updatedAddress = addressService.updateAddress(customerId, addressId, addressDTO);
         return ResponseEntity.ok(updatedAddress);
     }
 
     @DeleteMapping("/{addressId}")
-    public ResponseEntity<Void> deleteAddress(@PathVariable Long addressId) {
-        addressService.deleteAddress(addressId);
+    public ResponseEntity<Void> deleteAddress(
+            HttpServletRequest request,
+            @PathVariable Long addressId) {
+        Long customerId = getCustomerPersonId(request);
+        addressService.deleteAddress(customerId, addressId);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{customerId}")
-    public ResponseEntity<List<AddressDTO>> getAddressesByCustomer(@PathVariable Long customerId) {
+    @GetMapping("/my-addresses")
+    public ResponseEntity<List<AddressDTO>> getAddressesByCustomer(HttpServletRequest request) {
+        Long customerId = getCustomerPersonId(request);
         List<AddressDTO> addresses = addressService.getAddressesByCustomer(customerId);
         return ResponseEntity.ok(addresses);
     }
