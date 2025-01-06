@@ -163,7 +163,7 @@ public class RestaurantController {
     @PutMapping("/waiting")
     public ResponseEntity<OrderDTO> updateOrderWaiting(HttpServletRequest request, @RequestParam Long orderId, @RequestParam Long restaurantId) {
         String role = getUserRole(request);
-        checkAuthorized(request, orderId, role);
+        checkAuthorized(request, restaurantId, role);
 
         OrderDTO updatedOrder = restaurantService.updateRestaurantState(orderId, "WAITING_FOR_DELIVERY");
         return ResponseEntity.ok(updatedOrder);
