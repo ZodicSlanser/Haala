@@ -94,7 +94,7 @@ public class DeliveryPersonController {
   }
 
   @PostMapping("/orders/{orderId}/confirm-payment")
-  public ResponseEntity<?> confirmPayment(HttpServletRequest request, @PathVariable Long orderId) {
+  public ResponseEntity<OrderDTO> confirmPayment(HttpServletRequest request, @PathVariable Long orderId) {
     Long deliveryPersonId = getDeliveryPersonId(request);
     if (deliveryPersonId == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
