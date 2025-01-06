@@ -1,6 +1,9 @@
 package com.gizasystems.restaurantservice.controllers;
 
+import com.gizasystems.restaurantservice.DTOs.RestaurantDto;
+import com.gizasystems.restaurantservice.entites.Restaurant;
 import com.gizasystems.restaurantservice.service.OwnerService;
+import com.gizasystems.restaurantservice.service.RestaurantService;
 import lombok.AllArgsConstructor;
 import com.gizasystems.restaurantservice.DTOs.ItemDto;
 import com.gizasystems.restaurantservice.service.ItemService;
@@ -19,60 +22,52 @@ import static com.gizasystems.restaurantservice.util.helperFunctions.*;
 
 public class ItemController {
     @Autowired
-    public ItemController(ItemService itemService, OwnerService ownerService){
+    public ItemController(ItemService itemService, OwnerService ownerService, RestaurantService restaurantService) {
         this.itemService = itemService;
 
-        this.ownerService = ownerService;
+        this.restaurantService = restaurantService;
     }
+
     final private ItemService itemService;
-    final private OwnerService ownerService;
+    final private RestaurantService restaurantService;
 
     // The owner must be in the list of the owners belonging to that Restaurant being provided while creating the item.
     @PostMapping
-    public ResponseEntity<ItemDto> createItem(HttpServletRequest request, @RequestBody ItemDto itemDto){
-        Long ownerId = getUserId(request);
-        List<Long> ownerRestaurantIds = ownerService.getRestaurantsByOwnerId(ownerId);
+    public ResponseEntity<ItemDto> createItem(HttpServletRequest request, @RequestBody ItemDto itemDto) {
 
-        if(itemDto.getRestaurantId() == null){
+        if (itemDto.getRestaurantId() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        if (!ownerRestaurantIds.contains(itemDto.getRestaurantId())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        String role = getUserRole(request);
+
+
+        if (role != null && role.equals("OWNER")) {
+            Long ownerId = getUserId(request);
+            Restaurant existingRestaurant = restaurantService.getRestaurantById(itemDto.getRestaurantId());
+
+            if (existingRestaurant.getOwners().isEmpty() || existingRestaurant.getOwners().stream().noneMatch(owner -> owner.getId().equals(ownerId))) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(null);
+            }
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(null);
         }
+
 
         ItemDto savedItem = itemService.createItem(itemDto);
         return new ResponseEntity<>(savedItem, HttpStatus.CREATED);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ItemDto> getItemByID(HttpServletRequest request, @PathVariable("id") Long itemId){
-        Long ownerId = getUserId(request);
-        List<Long> ownerRestaurantIds = ownerService.getRestaurantsByOwnerId(ownerId);
-
+    public ResponseEntity<ItemDto> getItemByID(HttpServletRequest request, @PathVariable("id") Long itemId) {
         ItemDto itemDto = itemService.getItemById(itemId);
-
-        if (itemDto == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        if (!ownerRestaurantIds.contains(itemDto.getRestaurantId())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         return ResponseEntity.ok(itemDto);
     }
 
     @GetMapping("/restaurant/{restaurantId}")
-    public ResponseEntity<List<ItemDto>> getAllItemsByRestaurantID(HttpServletRequest request, @PathVariable("restaurantId") Long restaurantId){
-
-        Long ownerId = getUserId(request);
-        List<Long> ownerRestaurantIds = ownerService.getRestaurantsByOwnerId(ownerId);
-
-        // Check if the restaurantId belongs to the current user
-        if (!ownerRestaurantIds.contains(restaurantId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
+    public ResponseEntity<List<ItemDto>> getAllItemsByRestaurantID(@PathVariable("restaurantId") Long restaurantId) {
         // Get the items for the specific restaurant
         List<ItemDto> items = itemService.getItemsByRestaurantId(restaurantId);
 
@@ -80,7 +75,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ItemDto>> getAllItems(HttpServletRequest request){
+    public ResponseEntity<List<ItemDto>> getAllItems(HttpServletRequest request) {
 
         List<ItemDto> items = itemService.getAllItems();
         return ResponseEntity.ok(items);
@@ -92,15 +87,10 @@ public class ItemController {
                                               @RequestBody ItemDto updatedItem) {
 
         Long ownerId = getUserId(request);
-        List<Long> ownerRestaurantIds = ownerService.getRestaurantsByOwnerId(ownerId);
+        List<RestaurantDto> ownerRestaurant = restaurantService.getRestaurantsByOwnerId(ownerId);
 
-        ItemDto existingItem = itemService.getItemById(itemId);
-
-        if (existingItem == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        if (!ownerRestaurantIds.contains(existingItem.getRestaurantId())) {
+        // Check if the restaurantId belongs to the current user
+        if (ownerRestaurant.stream().noneMatch(restaurant -> restaurant.getId().equals(updatedItem.getRestaurantId()))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -112,18 +102,16 @@ public class ItemController {
     public ResponseEntity<String> deleteItem(HttpServletRequest request,
                                              @PathVariable("id") Long itemId) {
 
-        Long ownerId = getUserId(request);
-        List<Long> ownerRestaurantIds = ownerService.getRestaurantsByOwnerId(ownerId);
 
         ItemDto existingItem = itemService.getItemById(itemId);
+        Long ownerId = getUserId(request);
+        List<RestaurantDto> ownerRestaurant = restaurantService.getRestaurantsByOwnerId(ownerId);
 
-        if (existingItem == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        if (!ownerRestaurantIds.contains(existingItem.getRestaurantId())) {
+        // Check if the restaurantId belongs to the current user
+        if (ownerRestaurant.stream().noneMatch(restaurant -> restaurant.getId().equals(existingItem.getRestaurantId()))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
 
         itemService.deleteItem(itemId);
         return ResponseEntity.ok("Item deleted successfully!");
@@ -132,15 +120,9 @@ public class ItemController {
     @GetMapping("/category/{category}")
     public ResponseEntity<List<ItemDto>> getItemsByCategory(HttpServletRequest request,
                                                             @PathVariable String category) {
-        Long ownerId = getUserId(request);
-        List<Long> ownerRestaurantIds = ownerService.getRestaurantsByOwnerId(ownerId);
 
         List<ItemDto> items = itemService.getItemsByCategory(category);
 
-        List<ItemDto> filteredItems = items.stream()
-                .filter(item -> ownerRestaurantIds.contains(item.getRestaurantId()))
-                .toList();
-
-        return ResponseEntity.ok(filteredItems);
+        return ResponseEntity.ok(items);
     }
 }
