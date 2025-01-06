@@ -42,6 +42,7 @@ public class ItemController {
         String role = getUserRole(request);
 
 
+        // Saftey: API Gateway
         if (role != null && role.equals("OWNER")) {
             Long ownerId = getUserId(request);
             Restaurant existingRestaurant = restaurantService.getRestaurantById(itemDto.getRestaurantId());
@@ -50,12 +51,7 @@ public class ItemController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(null);
             }
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(null);
         }
-
-
         ItemDto savedItem = itemService.createItem(itemDto);
         return new ResponseEntity<>(savedItem, HttpStatus.CREATED);
     }

@@ -152,7 +152,7 @@ public class RestaurantController {
     }
 
     @PutMapping("/preparing")
-    public ResponseEntity<OrderDTO> updateOrderPreparing(HttpServletRequest request, @RequestBody Long orderId, @RequestBody Long restaurantId) {
+    public ResponseEntity<OrderDTO> updateOrderPreparing(HttpServletRequest request, @RequestParam Long orderId, @RequestParam Long restaurantId) {
         String role = getUserRole(request);
         checkAuthorized(request, restaurantId, role );
 
@@ -161,7 +161,7 @@ public class RestaurantController {
     }
 
     @PutMapping("/waiting")
-    public ResponseEntity<OrderDTO> updateOrderWaiting(HttpServletRequest request, @RequestBody Long orderId, @RequestBody Long restaurantId) {
+    public ResponseEntity<OrderDTO> updateOrderWaiting(HttpServletRequest request, @RequestParam Long orderId, @RequestParam Long restaurantId) {
         String role = getUserRole(request);
         checkAuthorized(request, orderId, role);
 
