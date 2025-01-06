@@ -22,7 +22,7 @@ public class OrderStateService {
         switch (newState) {
             case PLACED -> order.setCreated_at(LocalDateTime.now());
             case PREPARING -> order.setConfirmedAt(LocalDateTime.now());
-            case WAITING_FOR_DELIVERY -> order.setPickupAt(LocalDateTime.now());
+            case WAITING_FOR_DELIVERY, ON_WAY -> order.setPickupAt(LocalDateTime.now());
             case DELIVERED -> order.setDeliveredAt(LocalDateTime.now());
             case CANCELLED -> order.setCancelledAt(LocalDateTime.now());
             case DECLINED -> order.setDeclinedAt(LocalDateTime.now());
@@ -44,8 +44,9 @@ public class OrderStateService {
             case PREPARING, CANCELLED, DECLINED ->
                     currentState == OrderState.PLACED; //only valid if the order is placed
             case WAITING_FOR_DELIVERY -> currentState == OrderState.PREPARING; //only valid if the order is placed
-            case DELIVERED ->
+            case ON_WAY ->
                     currentState == OrderState.WAITING_FOR_DELIVERY; //only valid if the order is waiting for delivery
+            case DELIVERED -> currentState == OrderState.ON_WAY; //only valid if the order is waiting for delivery
             default -> false;
         };
     }

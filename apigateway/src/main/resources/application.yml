@@ -52,7 +52,7 @@ gateway:
     - path: /api/restaurants/**
       roles: [ "OWNER", "ADMIN" ]
     - path: /api/orders/**
-      roles: [ "USER", "ADMIN" ]
+      roles: [ "CUSTOMER", "ADMIN" ]
     - path: /api/delivery-person/**
       roles: [ "DELIVERY_PERSON","ADMIN" ]
 

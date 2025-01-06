@@ -95,7 +95,7 @@ public class OrderService {
             throw new IllegalStateException("Order already has a delivery person assigned");
         }
         order.setDeliveryId(deliveryId);
-        orderStateService.updateOrderState(order, OrderState.WAITING_FOR_DELIVERY);
+        orderStateService.updateOrderState(order, OrderState.ON_WAY);
         return updateOrder(order);
     }
 
