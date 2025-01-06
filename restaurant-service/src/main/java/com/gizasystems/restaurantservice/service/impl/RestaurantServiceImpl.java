@@ -1,21 +1,17 @@
 package com.gizasystems.restaurantservice.service.impl;
 
-import com.gizasystems.restaurantservice.DTOs.OrderDTO;
 import com.gizasystems.restaurantservice.DTOs.RestaurantDto;
-import com.gizasystems.restaurantservice.client.OrderService;
 import com.gizasystems.restaurantservice.entites.Owner;
 import com.gizasystems.restaurantservice.entites.Restaurant;
 import com.gizasystems.restaurantservice.exceptions.ResourceNotFoundException;
 import com.gizasystems.restaurantservice.mapper.RestaurantMapper;
-import com.gizasystems.restaurantservice.repository.OwnerRepository;
 import com.gizasystems.restaurantservice.repository.RestaurantRepository;
 import com.gizasystems.restaurantservice.service.RestaurantService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,14 +22,8 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Autowired
     private RestaurantRepository restaurantRepository;
 
-    @Autowired
-    private OwnerRepository ownerRepository;
-
-    @Autowired
-    private OrderService orderService;
-
     @Override
-    public RestaurantDto createRestaurant(RestaurantDto restaurantDto) throws Exception {
+    public RestaurantDto createRestaurant(RestaurantDto restaurantDto) {
 
         Restaurant restaurant = RestaurantMapper.mapToRestaurant(restaurantDto);
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
@@ -42,18 +32,19 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public Restaurant getRestaurantById(Long restaurantId) {
+    public RestaurantDto getRestaurantById(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant is not existing with given id: " + restaurantId));
 
-        return restaurant;
+        return RestaurantMapper.mapToRestaurantDto(restaurant);
     }
 
     @Override
-    public List<Restaurant> getAllRestaurants() {
+    public List<RestaurantDto> getAllRestaurants() {
         List<Restaurant> restaurants = restaurantRepository.findAll();
 
-        return restaurants;
+        return restaurants.stream().map(RestaurantMapper::mapToRestaurantDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -62,6 +53,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                 () -> new ResourceNotFoundException("Restaurant is not existing with given id: " + restaurantId)
         );
         restaurant.setName(updatedRestaurantDto.getName());
+        restaurant.setAddressId(updatedRestaurantDto.getAddressId());
 
         Restaurant updatedRestaurant = restaurantRepository.save(restaurant);
 
@@ -78,31 +70,43 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurantRepository.deleteById(restaurantId);
     }
 
-
     @Override
-    public List<RestaurantDto> getRestaurantsByOwnerId(Long ownerId) {
-        Owner owner = ownerRepository.findById(ownerId).orElseThrow(() -> new ResourceNotFoundException("Owner not found with id: " + ownerId));
-        List<Restaurant> restaurants = restaurantRepository.findRestaurantsByOwners(Collections.singletonList(owner));
-
-        return restaurants.stream().map(RestaurantMapper::mapToRestaurantDto).collect(Collectors.toList());
+    public RestaurantDto getRestaurantByAddressId(Long addressId) {
+        Restaurant restaurant = restaurantRepository.findByAddressId(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with address ID: " + addressId));
+        return RestaurantMapper.mapToRestaurantDto(restaurant);
     }
 
+    @Override
+    public RestaurantDto getRestaurantByOwnerId(Long ownerId) {
+        Restaurant restaurant = restaurantRepository.findAll()
+                .stream()
+                .filter(r -> r.getOwnerIds() != null && r.getOwnerIds().contains(ownerId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with owner ID: " + ownerId));
+        return RestaurantMapper.mapToRestaurantDto(restaurant);
+    }
+
+    @Override
+    public List<RestaurantDto> getRestaurantsByOwnerId(Long ownerId) throws Throwable {
+        SimpleJpaRepository ownerRepository = null;
+        Owner owner = (Owner) ownerRepository.findById(ownerId).orElseThrow(
+                () -> new ResourceNotFoundException("Owner not found with ID: " + ownerId)
+        );
+
+        List<Long> restaurantIds = owner.getRestaurantIds();
+        List<Restaurant> restaurants = restaurantRepository.findAllById(restaurantIds);
+
+        return restaurants.stream()
+                .map(RestaurantMapper::mapToRestaurantDto)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public RestaurantDto getRestaurantByName(String name) {
         Restaurant restaurant = restaurantRepository.findByName(name)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with name: " + name));
         return RestaurantMapper.mapToRestaurantDto(restaurant);
-    }
-
-    public List<OrderDTO> getRestaurantOrders(Long restaurantId,String state) {
-
-        return orderService.searchOrders(restaurantId, state).getBody();
-
-    }
-
-    public OrderDTO updateRestaurantState(Long orderId, String state) {
-        return orderService.updateOrderState(orderId, state);
     }
 
 }

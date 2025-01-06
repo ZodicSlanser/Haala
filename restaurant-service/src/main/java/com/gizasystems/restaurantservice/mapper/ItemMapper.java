@@ -6,7 +6,7 @@ import com.gizasystems.restaurantservice.entites.Restaurant;
 
 public class ItemMapper {
 
-    public static ItemDto mapToItemDto(Item item) {
+    public static ItemDto mapToItemDto(Item item){
         return new ItemDto(
                 item.getId(),
                 item.getName(),
@@ -19,7 +19,7 @@ public class ItemMapper {
         );
     }
 
-    public static Item mapToItem(ItemDto itemDto, Restaurant restaurant) {
+    public static Item mapToItem(ItemDto itemDto, Restaurant restaurant){
         Item item = new Item(
                 itemDto.getId(),
                 itemDto.getName(),
@@ -27,8 +27,7 @@ public class ItemMapper {
                 itemDto.getPrice(),
                 itemDto.getRating(),
                 itemDto.getCategory(),
-                itemDto.getQuantity(),
-                restaurant
+                itemDto.getQuantity()
         );
 
         item.setRestaurant(restaurant); // Set the restaurant to the item

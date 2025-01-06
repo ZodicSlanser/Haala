@@ -70,7 +70,7 @@ public class UserService {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
 
         // Find user in the database
-        User user = userRepository.findByEmail(authRequest.getUsername())
+        final User user = userRepository.findByEmail(authRequest.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // Generate JWT token

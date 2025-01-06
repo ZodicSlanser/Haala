@@ -30,7 +30,7 @@ public class ItemServiceImpl implements ItemService {
 
         Item item = ItemMapper.mapToItem(itemDto, restaurant);
 
-        restaurant.getItems().add(item);
+        restaurant.getItemIds().add(item.getId());
 
         restaurantRepository.save(restaurant);
 
@@ -42,7 +42,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto getItemById(Long itemId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ResourceNotFoundException("Item is not existing with given id: " + itemId));
+                .orElseThrow(()->new ResourceNotFoundException("Item is not existing with given id: "+itemId));
 
         return ItemMapper.mapToItemDto(item);
     }
@@ -51,14 +51,14 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getAllItems() {
         List<Item> items = itemRepository.findAll();
 
-        return items.stream().map((item) -> ItemMapper.mapToItemDto(item))
+        return items.stream().map((item)->ItemMapper.mapToItemDto(item))
                 .collect(Collectors.toList());
     }
 
     @Override
     public ItemDto updateItem(Long itemId, ItemDto updatedItem) {
         Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new ResourceNotFoundException("Item is not existing with given id: " + itemId)
+                ()->new ResourceNotFoundException("Item is not existing with given id: "+itemId)
         );
         item.setName(updatedItem.getName());
         item.setDescription(updatedItem.getDescription());
@@ -75,8 +75,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public void deleteItem(Long itemId) {
 
-        itemRepository.findById(itemId).orElseThrow(
-                () -> new ResourceNotFoundException("Item is not existing with given id: " + itemId)
+        Item item = itemRepository.findById(itemId).orElseThrow(
+                ()->new ResourceNotFoundException("Item is not existing with given id: "+itemId)
         );
 
         itemRepository.deleteById(itemId);
