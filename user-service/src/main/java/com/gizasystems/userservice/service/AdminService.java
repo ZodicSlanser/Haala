@@ -2,6 +2,7 @@ package com.gizasystems.userservice.service;
 
 
 import com.gizasystems.userservice.client.DeliveryPersonClient;
+import com.gizasystems.userservice.client.OwnerClient;
 import com.gizasystems.userservice.converter.UserMapper;
 import com.gizasystems.userservice.dto.DeliveryPersonRequest;
 import com.gizasystems.userservice.dto.SignupRequest;
@@ -19,18 +20,22 @@ public class AdminService {
     private final UserFactory userFactory;
     private final UserMapper userMapper;
     private final DeliveryPersonClient deliveryPersonClient;
+    private final OwnerClient ownerClient;
 
 
-    public AdminService(UserRepository userRepository, UserFactory userFactory, UserMapper userMapper, DeliveryPersonClient deliveryPersonClient) {
+    public AdminService(UserRepository userRepository, UserFactory userFactory, UserMapper userMapper, DeliveryPersonClient deliveryPersonClient, OwnerClient ownerClient) {
         this.userRepository = userRepository;
         this.userFactory = userFactory;
         this.userMapper = userMapper;
         this.deliveryPersonClient = deliveryPersonClient;
+        this.ownerClient = ownerClient;
     }
 
     @Transactional
     public UserDTO createOwnerAccount(SignupRequest signupRequest) {
-        return createUserWithRole(signupRequest, "OWNER");
+        UserDTO userDTO = createUserWithRole(signupRequest, "OWNER");
+        ownerClient.createOwner(userDTO.getId());
+        return userDTO;
     }
 
     @Transactional
